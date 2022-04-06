@@ -1,6 +1,7 @@
 """
 This is a simple CLI tool to manage virtual machines locally using VirtualBox library.
 """
+from lib2to3.refactor import get_all_fix_names
 import virtualbox
 from time import sleep
 
@@ -18,6 +19,7 @@ stop_program = False
 
 def get_machines():
     """Retrieves all available machines and stores them in machines{}"""
+    machines.clear() #Clean dict
     sleep(1) #Avoid quick showing
     id_count = 1 #counter for id
     for m in vbox.machines:
@@ -31,7 +33,7 @@ def list_machines():
     print("ID \t \t NAME \t \t \t STATE")
     print("-----------------------------------------------------------------")
     for vm_id in machines:
-        print(str(vm_id) + "  " + machines[vm_id].name + " " + str(machines[vm_id].state))
+        print(str(vm_id) + "  " + machines[vm_id].name + " | " + str(machines[vm_id].state))
         print("")
 
 def start_machine():
@@ -39,39 +41,62 @@ def start_machine():
     list_machines() #Show available machines
     vm_id = int(input("Please write the ID of the machine you want to start: "))
     #Launching the machine
-    session = virtualbox.Session()
-    machine = vbox.find_machine(machines[vm_id].name)
-    if machine.state == 5:
-        print("Machine is already running!")
-    else:
+    try:
+        session = virtualbox.Session()
+        machine = vbox.find_machine(machines[vm_id].name)
         progress = machine.launch_vm_process(session, "gui", [])
         progress.wait_for_completion()
         # Saving session
         sessions[vm_id] = session
 
         print("Machine succesfully started!")
-
+    except:
+        print("Machine couldn't been started. Try again.")
 
 def stop_machine():
     """Stops a machine from the available ones"""
     list_machines() #Show available machines
     vm_id = int(input("Please write the ID of the machine you want to shut down: "))
-    # Getting Session object
-    session = sessions[vm_id]
-    # Shutting down the vm
-    progress = session.console.power_down()
-    progress.wait_for_completion()
+    try:
+        # Getting Session object
+        session = sessions[vm_id]
+        # Shutting down the vm
+        progress = session.console.power_down()
+        progress.wait_for_completion()
 
-    print("Machine succesfully shut down!")
+        print("Machine succesfully shut down!")
+    except:
+        print("Machine couldn't been shut down. Try again.")
 
 
 def create_machine():
     """Creates a new machine in the root folder"""
+    m_name = input("What is the name of the new machine: ")
+
+    try:
+        vm = vbox.create_machine(settings_file="",
+                                  name=m_name,
+                                  groups=[],
+                                  os_type_id="ubuntu_64",
+                                  flags="")
+        # Add machine to VirtualBox
+        vbox.register_machine(vm)
+    
+        print("Machine successfully created!")
+    except:
+        print("Machine couldn't been created. Try again.")
 
 def delete_machine():
     """Deletes a machine from the ones available"""
     list_machines()
+    vm_id = int(input("Please write the ID of the machine you want to delete: "))
+    try:
+        machine = vbox.find_machine(machines[vm_id].name)
+        machine.remove()
 
+        print("Machine succesfully removed!")
+    except:
+        print("Machine couldn't be deleted. Try again.")
 
 # Execution loop
 while not stop_program:
