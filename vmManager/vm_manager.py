@@ -36,8 +36,8 @@ def list_machines():
         print(str(vm_id) + "  " + machines[vm_id].name + " | " + str(machines[vm_id].state))
         print("")
 
-def start_machine():
-    """Starts a machine from the available ones"""
+def start_machine_gui():
+    """Starts a machine from the available ones with GUI"""
     list_machines() #Show available machines
     vm_id = int(input("Please write the ID of the machine you want to start: "))
     #Launching the machine
@@ -45,6 +45,23 @@ def start_machine():
         session = virtualbox.Session()
         machine = vbox.find_machine(machines[vm_id].name)
         progress = machine.launch_vm_process(session, "gui", [])
+        progress.wait_for_completion()
+        # Saving session
+        sessions[vm_id] = session
+
+        print("Machine succesfully started!")
+    except:
+        print("Machine couldn't been started. Try again.")
+
+def start_machine_headless():
+    """Starts a machine from the available ones headless"""
+    list_machines() #Show available machines
+    vm_id = int(input("Please write the ID of the machine you want to start: "))
+    #Launching the machine
+    try:
+        session = virtualbox.Session()
+        machine = vbox.find_machine(machines[vm_id].name)
+        progress = machine.launch_vm_process(session, "headless", [])
         progress.wait_for_completion()
         # Saving session
         sessions[vm_id] = session
@@ -63,6 +80,8 @@ def stop_machine():
         # Shutting down the vm
         progress = session.console.power_down()
         progress.wait_for_completion()
+        # Remove machine from sessions{}
+        del sessions[vm_id]
 
         print("Machine succesfully shut down!")
     except:
@@ -105,10 +124,11 @@ while not stop_program:
     print("VM Manager\n")
     print("Options available:\n")
     print("1: Show available machines")
-    print("2: Start a machine")
-    print("3: Shut down a machine")
-    print("4: Create a machine")
-    print("5: Delete a machine")
+    print("2: Start a machine with GUI")
+    print("3: Start a machine in the background")
+    print("4: Shut down a machine")
+    print("5: Create a machine")
+    print("6: Delete a machine")
     print("0: Exit\n")
 
     # User option
@@ -117,12 +137,14 @@ while not stop_program:
     if u_opt == "1":
         list_machines()
     if u_opt == "2":
-        start_machine()
+        start_machine_gui()
     if u_opt == "3":
-        stop_machine()
+        start_machine_headless()
     if u_opt == "4":
-        create_machine()
+        stop_machine()
     if u_opt == "5":
+        create_machine()
+    if u_opt == "6":
         delete_machine()
     if u_opt == "0":
         stop_program = True 
