@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    tools {
+        python 'python-3.8.10'
+    }
     stages {
         stage('hello-world'){
             steps{
