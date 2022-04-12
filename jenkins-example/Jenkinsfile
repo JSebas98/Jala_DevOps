@@ -1,18 +1,18 @@
 pipeline {
-    agent none
+    agent any
 
     stages {
         stage('hello-world'){
             steps{
-                docker.image('python:3.10.1-alpine').inside {
-                    sh 'cd jenkins-example && python hello-world.py'
+                script {
+                    sh 'cd jenkins-example && python3 hello-world.py'
                 }
             }
         }
         stage('Test'){
             steps{
-                docker.image('python:3.10.1-alpine').inside {
-                    sh 'cd jenkins-example && python sum_test.py'
+                script {
+                    sh 'cd jenkins-example && python3 sum_test.py'
                 }
             }
         }
