@@ -1,5 +1,6 @@
 pipeline {
-   node('docker') {
+    agent none
+    node('docker') {
         stages {
             stage('hello-world'){
                 steps{
