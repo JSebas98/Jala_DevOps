@@ -5,7 +5,7 @@ pipeline {
         stage('hello-world'){
             steps{
                 script {
-                    sh 'cd jenkins-example && ls'
+                    sh 'cd jenkins-example && python3 hello-world.py'
                 }
             }
         }
