@@ -1,15 +1,19 @@
 pipeline {
-    agent any
-    tools {
-        python 'python-3.8.10'
-    }
+    agent none
+
     stages {
         stage('hello-world'){
+            agent {
+                docker {image 'python:3.10.1-alpine'}
+            }
             steps{
                 sh 'cd jenkins-example && python hello-world.py'
             }
         }
         stage('Test'){
+            agent {
+                docker {image 'python:3.10.1-alpine'}
+            }
             steps{
                 sh 'cd jenkins-example && python sum_test.py'
             }
