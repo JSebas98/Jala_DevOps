@@ -4,12 +4,12 @@ pipeline {
     stages {
         stage('hello-world'){
             steps{
-                sh 'cd ~/jenkins-example && python3 hello-world.py'
+                sh 'cd jenkins-example && python3 hello-world.py'
             }
         }
         stage('Test'){
             steps{
-                sh 'cd ~/jenkins-example && python3 sum_test.py'
+                sh 'cd jenkins-example && python3 sum_test.py'
             }
         }
     }
